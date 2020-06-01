@@ -22,8 +22,9 @@ Project is created with:
 * Unix/Linux
 
 ## Repo description
-- ```MOFA/``` contains script to train MOFA model and some functions to uncover sources of variation 
-- ```MEM_clean.R``` used for mixed-effect modelling  
+- ```MOFA_Helsinki.R``` used to train MOFA model and some functions to uncover sources of variation 
+- ```MEM_clean.R``` used for mixed-effect modelling 
+- ```cell_corr.R``` uses cell abundance to build spearman correlation plots
 
 ## Single-level analyses
 ### Grid
@@ -43,7 +44,7 @@ $ pip install cellgrid
 
 ## Figures
 ### Spearman Correlation 
-- ```spearman_corrmatrix.R``` uses cell abundance dataframe built from Grid that is sub-setted by grouped days for correlation
+- ```cell_corr.R``` uses cell abundance dataframe built from Grid that is sub-setted by grouped days for correlation
 - Option to re-order one matrix in accordance to the other for comparison purposes
 
 ## Setup
