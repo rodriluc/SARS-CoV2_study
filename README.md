@@ -25,6 +25,8 @@ Project is created with:
 - ```MOFA_Helsinki.R``` used to train MOFA model and some functions to uncover sources of variation 
 - ```MEM_clean.R``` used for mixed-effect modelling 
 - ```cell_corr.R``` uses cell abundance to build spearman correlation plots
+- ```Single_features.R``` used to plot trends for all datasets
+- ```Sample_tpt.R``` used to plot general timeline of sample aquisition for Olink and CyTOF
 
 ## Single-level analyses
 ### Grid
