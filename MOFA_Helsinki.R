@@ -16,7 +16,7 @@ setwd('~/Documents/Helsinki_COVID19/MOFA_Helsinki')
 d_olink = read.csv('Olink_all.csv', sep='\t', row.names = 1, header = TRUE)
 d_olink = as.data.frame(t(d_olink))
 head(d_olink)
-#load Grid data
+#load Grid data (Z-score transformation)
 d_grid = read.csv('grid_all.csv', sep=';', row.names = 1, header = TRUE)
 d_grid = as.data.frame(t(d_grid))
 head(d_grid)
@@ -39,8 +39,8 @@ MOFA::plotDataOverview(MOFAobject)
 DataOptions <- MOFA::getDefaultDataOptions()
 DataOptions
 
-ModelOptions <- MOFA::getDefaultModelOptions(MOFAobject)#(MOFAobject)
-ModelOptions$numFactors <- 10
+ModelOptions <- MOFA::getDefaultModelOptions(MOFAobject)
+ModelOptions$numFactors <- 10 
 ModelOptions
 
 TrainOptions <- MOFA::getDefaultTrainOptions()
@@ -64,13 +64,9 @@ r2 <- calculateVarianceExplained(MOFAobject_fix)
 r2$R2Total
 plotVarianceExplained(MOFAobject_fix)
 
-#Extract covariates
-#condition <- getCovariates(MOFAobjectSS4, 'Group')
-#condition
-
 #plot a heatmap of the loadings from multiple factors in a given view
 plotWeightsHeatmap(
-  MOFAobject_H, 
+  MOFAobject_fix, 
   view = "Plasma Protein", 
   factors = 1:5,
   show_colnames = TRUE
@@ -84,13 +80,13 @@ plotTopWeights(
 
 #plot all loadings for a given factor and view
 plotWeights(
-  MOFAobject_H, 
+  MOFAobject_fix, 
   view = "Plasma Protein", 
   factor = 2
 ) 
 
 #correlation plot between factors -> should be uncorrelated
-plotFactorCor(MOFAobject_H, method = 'pearson')
+plotFactorCor(MOFAobject_fix, method = 'pearson')
 
 #scatterplot between two factors, similar to PCA
 fs <- plotFactorScatters(MOFAobject_fix, factors = 1:5, color_by = 'Overall.clinical.grade') #Day..
@@ -103,51 +99,34 @@ pal <- wes_palette("Zissou1", 3, type = "continuous")
 colfunc <- colorRampPalette(c("#3B9AB2", "#78B7C5", "#EBCC2A", "#E1AF00", "#F21A00"))
 colfunc(10)
 plot(rep(1,10),col=colfunc(10),pch=19,cex=3)
-#low='#00dcff', high="#F21A00"
 
 for(i in 1:fs$nrow) {
   for(j in 1:fs$ncol){
     fs[i,j] <- fs[i,j] + 
       geom_point(size=2.0) +
       scale_colour_gradient2(low='#3B9AB2', mid='#EBCC2A', high="#F21A00")
-       #scale_colour_manual(values =c('#3B9AB2','#EBCC2A',"#F21A00"))
     
   }
 }
 fs  
 
-
-
 set.seed(1234)
 clusters <- clusterSamples(
-  MOFAobjectSS2, 
+  MOFAobject_fix, 
   k = 3,        # Number of clusters for the k-means function
   factors = 5   # factors to use for the clustering
 )
 
 plotFactorScatter(
-  MOFAobjectSS2, 
+  MOFAobject_fix, 
   factors = 4:5, 
   color_by = clusters
 )
 
 plotFactorBeeswarm(
-  MOFAobject_H,
+  MOFAobject_fix,
   factors = 1,
   color_by = "Day.."
-)
-
-set.seed(1234)
-clusters <- clusterSamples(
-  MOFAobjectSS2, 
-  k = 2,        # Number of clusters for the k-means function
-  factors = 2   # factors to use for the clustering
-)
-
-plotFactorScatter(
-  MOFAobjectSS2, 
-  factors = 1:2, 
-  color_by = clusters
 )
 
 MOFAweights <- getWeights(
@@ -159,28 +138,28 @@ MOFAweights <- getWeights(
 MOFAweights
 write.csv(MOFAweights, file='MOFAweights.csv')
 
-factor1 <- sort(getFactors(MOFAobjectSS2,"LF2")[,1])
-order_samples <- names(factor1)
+factor2 <- sort(getFactors(MOFAobject_fix,"LF2")[,1])
+order_samples <- names(factor2)
 df <- data.frame(
   row.names = order_samples,
-  #culture = getCovariates(MOFAobjectSS2, "Severity")[order_samples],
-  factor = factor1
+  factor = factor2
 )
 
-df1 <- getFactors(MOFAobjectSS3, 'all')
+df1 <- getFactors(MOFAobject_fix, 'all')
 write.csv(df1, file='AllFactors.csv')
 
 plotDataHeatmap(
-  object = MOFAobjectSS2, 
+  object = MOFAobject_fix, 
   view = "Cell Population", 
-  factor = "LF1", 
+  factor = "LF2", 
   features = 20, 
   transpose = TRUE, 
   show_colnames=FALSE, show_rownames=TRUE, # pheatmap options
   cluster_cols = FALSE, annotation_col=df # pheatmap options
 )
+
 plotWeights(
-  object = MOFAobjectSS2,
+  object = MOFAobject_fix,
   view = "Plasma Protein", 
   factor = 3, 
   nfeatures = 0,
@@ -195,27 +174,12 @@ ID <-getCovariates(MOFAobject_fix,'Subject_ID')
 cdr <-getCovariates(MOFAobject_fix,'Day..') 
 ICU <-getCovariates(MOFAobject_fix,'ICU') 
 
-
 factor2 <- getFactors(MOFAobject_fix,
                       factors=2)
 foo <- data.frame(factor = as.numeric(factor2), cdr = cdr)
 ggplot(foo, aes_string(x = "factor", y = "cdr", color=ICU)) + 
   geom_point()+
-  #geom_point(aes(colour = ICU)) + 
   xlab("Latent Factor 2") +
   ylab("Days") +
-  #stat_smooth(method="lm") +
-  #geom_smooth(span = 0.3)+
   geom_smooth(se = FALSE, method = lm,aes(group=ID))+
-  #geom_path(aes(group=ID,color=ID), lty = 2) + #geom_line
   theme_bw() + coord_flip()
-
-#Pearson-Spearman correlation
-ggscatter(foo, x = "factor", y = "cdr", 
-          add = "reg.line", conf.int = TRUE, 
-          cor.coef = TRUE, cor.method = "pearson",
-          xlab = "Factor 2", ylab = "Relative SS (log2 ratio)")+  ## of Active treatment
-  geom_line(aes(group=ID), lty = 2, colour = "purple") 
-
-res.cor <- cor.test(foo$factor, foo$cdr, method = "pearson")
-res.cor
