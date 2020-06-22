@@ -1,19 +1,19 @@
 library(ggplots)
 
-setwd('~/Documents/Helsinki_COVID19/serology/')
+setwd('~/Documents/Helsinki_COVID19/')
 
 ##################################
 #        Input and subset        #
 ##################################
 
 #Load Recovered
-d_R = read.csv('sero_mixedcorr.csv', sep=';', row.names = 1)
+d_R = read.csv('grid_R.csv', sep=';', row.names = 1)
 head(d_R)
 #load Grid <=3
 d_3 = read.csv('grid_4_2.csv', sep=';', row.names = 1) 
 head(d_3)
 #load Grid 4-7
-d_7 = read.csv('8_2.csv', sep=';', row.names = 1) 
+d_7 = read.csv('grid_8_2.csv', sep=';', row.names = 1) 
 head(d_7)
 #load Grid 8-14
 d_14 = read.csv('grid_14_2.csv', sep=';', row.names = 1) 
