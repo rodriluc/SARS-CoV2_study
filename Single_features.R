@@ -6,8 +6,7 @@ setwd('~/Documents/Helsinki_COVID19/Olink_20200515')
 
 Acute <- read.csv('PB_Covid-19_Plate1_filterA.csv', sep = ';')
 head(Acute)
-#x <- AHR[,2]
-#x.vector <- as.vector(x)
+Recovered <- read.csv('PB_Covid-19_Plate1_filterR.csv', sep = ';')
 
 ######################################
 #         Plot NPX vs. Days          #
@@ -23,12 +22,10 @@ library(reshape2)
 library(ggforce)
 require(gridExtra)
 
-Acute <- read.csv('PB_Covid-19_Plate1_filterA.csv', sep = ';')
 y <- Acute[,-1]
-Recovered <- read.csv('PB_Covid-19_Plate1_filterR.csv', sep = ';')
 x <- Recovered[,-1]
 
-#gRID
+#Grid
 setwd('~/Documents/Helsinki_COVID19')
 cellA <- read.csv('meta_clinical.csv', sep = ';')
 #y <- cellA[,-1]
@@ -53,47 +50,19 @@ q <- ggplot(x, aes(x=as.character(Days), y=Other.gdT)) +
 
 grid.arrange(p, q, ncol=2)
 
-
-#new trials
-
-p <- ggplot(d, aes(x=Days, y=value, group=Subject_ID, colour=ICU)) +  
-  facet_grid_paginate(~ variable, nrow = 3, ncol=2, page = 76, scales ='free')+
-  #ggtitle(variable.names()) +
-  geom_line(aes(group = Subject_ID)) + labs(x= 'Days', y = 'NPX') +
-  theme( strip.text = element_text(size = 12)) 
-  #scale_colour_discrete(guide = 'none') +
-  #xlim(0,200)
-#geom_dl(aes(label = variable), method =list('last.bumpup', cex = 0.6, hjust = -0.1)) 
-required_n_pages <- n_pages(p)
-
-for(i in 1:required_n_pages){
-  
-  ggplot(d, aes(x=Days, y=value, group=Subject_ID, colour=ICU)) +  
-    facet_grid_paginate(~ variable, nrow = 3, ncol=2, scales ='free')+
-    geom_line(aes(group = Subject_ID)) + labs(x= 'Days', y = 'NPX') +
-    theme( strip.text = element_text(size = 30)) -> p
-}
-  print(p)
-
-
-# Works 12 by 12
+#All feature plots
 setwd('~/Documents/Helsinki_COVID19/Olink_20200515')
   
-Acute <- read.csv('PB_Covid-19_Plate1_filterA_34.csv', sep = ';')
-y <- Acute[,-1]
-
-#plot1 <- 
-y %>%
+#Acute
+plot1 <- y %>%
   gather(-Subject_ID, -ICU, -Days, key = "var", value = "value") %>% 
   ggplot(aes(x = Days, y = value)) +
   geom_line() +
   scale_x_continuous(breaks=seq(-1,16,3)) +
   facet_wrap(~ var, scales = "free")
 
-Recovered <- read.csv('PB_Covid-19_Plate1_filterR_temp.csv', sep = ';')
-y <- Recovered[,-1]
-
-plot2 <- y %>%
+#Recovered
+plot2 <- x %>%
   gather(-Subject_ID, -Days, key = "var", value = "value") %>% 
   ggplot(aes(x = Days, y = value)) +
   geom_violin(trim=FALSE) +
@@ -109,14 +78,10 @@ grid.draw(rbind(ggplotGrob(plot1), ggplotGrob(plot2), size = "last"))
 ######################################
 library(ggfortify)
 library(devtools)
-setwd('~/Documents/Helsinki_COVID19/Olink_20200515')
 
-Acute <- read.csv('PB_Covid-19_Plate1_filterA.csv', sep = ';')
 df <- Acute[,-c(1:4)]
 head(df)
-#df <- dim(na.omit(df))
 
-#df$Sample_ID = as.numeric(as.factor(df$Sample_ID))
 pca_res <- prcomp(df, scale. = TRUE)
 
 autoplot(pca_res, data = Acute, colour = 'clinical_grade') + scale_color_gradient(low = "green",
@@ -149,16 +114,3 @@ hc1 <- hclust(d, method = "complete" )
 
 # Plot the obtained dendrogram
 plot(hc1, cex = 0.6, hang = -1)
-
-######################################
-#               DTW                 #
-######################################
-library(dtw)
-
-obj = bt.matching.find(Cl(Acute), normalize.fn = normalize.mean, dist.fn = 'dist.DTW', plot=T)
-
-matches = bt.matching.overlay(obj, plot.index=1:90, plot=T)
-
-layout(1:2)
-matches = bt.matching.overlay(obj, plot=T, layout=T)
-bt.matching.overlay.table(obj, matches, plot=T, layout=T)
