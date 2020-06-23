@@ -34,7 +34,7 @@ dfs <- me_memG_df
 dfs[,numcols] <- scale(dfs[,numcols])
 me_lmer.model <- update(me_lmer.model,data=dfs)
 
-# Evaluates whther a fitted mixed model is singular, if singular TRUE then opt for solution 
+# Evaluates whether a fitted mixed model is singular, if singular TRUE then opt for solution 
 # One of these solutions being a partial bayesion model especially with complex models
 isSingular(me_lmer.model, tol=1e-05)
 
@@ -51,7 +51,7 @@ stargazer(me_lmer.model,
           star.cutoffs = c(0.05, 0.01, 0.001),
           digit.separator = "", out = 'table_trial.html')
 
-## Statistical significance (ex. SS)
+## Statistical significance
 
 #1) construct null model first
 me_lmer.null = lmer(IgD.pos..Memory.B ~ old.RBD + Days + 
@@ -108,10 +108,8 @@ varlist1 <- lapply(blups.models_nextPP, function(f) summary(f)$call[2])
 varlist1
 
 # Correlation Coefficient
-#estimate_AT <- lapply(blups.models_nextPP, function(f) summary(f)$coefficients[6,1])
 estimate_RBD <- lapply(blups.models_nextPP, function(f) summary(f)$coefficients[2,1])
 estimate_DAYS <- lapply(blups.models_nextPP, function(f) summary(f)$coefficients[3,1])
-
 
 # Median
 med <- lapply(blups.models_nextPP, function(f) summary(f)$residuals)
@@ -137,5 +135,4 @@ names(test_data) <- c('cells', 'Median', 'Estimate_RBD', 'Estimate_Days', 'pvalu
 
 test_final <- as.data.frame(do.call(rbind, test_data))
 t(test_final)
-#setwd('~/Documents/Mixed_Effects_Model/AT_rerun/MEM_table')
 write.csv2(t(test_final), file='RBD_MEMtable.csv')
