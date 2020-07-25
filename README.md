@@ -18,8 +18,6 @@ This project used multiple omics data:
 ## Dependencies
 Project is created with:
 * RStudio version: 3.6.0
-* Python version: 2.7
-* Unix/Linux
 
 ## Repo description
 - ```MOFA_Helsinki.R``` used to train MOFA model and some functions to uncover sources of variation 
