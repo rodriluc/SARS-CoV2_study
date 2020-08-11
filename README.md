@@ -8,7 +8,6 @@ COVID-19 study from acute to recovered patients: single-level analyses and omics
 * [Single-level analyses](#single-level-analyses)
 * [Omics integration](#omics-integration)
 * [Figures](#figures)
-* [Setup](#setup)
 
 ## General info
 This project used multiple omics data:
@@ -46,13 +45,3 @@ $ pip install cellgrid
 ### Spearman Correlation 
 - ```cell_corr.R``` uses cell abundance dataframe built from Grid that is sub-setted by grouped days for correlation
 - Option to re-order one matrix in accordance to the other for comparison purposes
-
-## Setup
-To run this project, install it locally using devtools:
-
-```
-$ install.packages('devtools')
-$ library(devtools)
-$ install_github('rodriluc/SARS-CoV2_study')
-$ library(SARS-CoV2_study)
-```
